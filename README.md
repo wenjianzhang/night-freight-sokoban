@@ -6,14 +6,14 @@
 
 ## 试玩
 
-[在线试玩](https://night-freight-sokoban.cheng8984.chatgpt.site)。也可以下载仓库，直接打开 `index.html` 离线游玩。
+[GitHub Pages 在线试玩](https://go-admin-team.github.io/night-freight-sokoban/)。也可以下载仓库，直接打开 `index.html` 离线游玩。
 
 - 电脑：方向键或 WASD 移动。
 - 手机：点击页面内的方向按钮。
 - 推错时可以撤销一步或重开本关。箱子只能推，不能拉。
 - 三关的实际验证路径：第一关 `D`；第二关 `DDRR`；第三关 `LDDRRURD`（U/D/L/R 分别是上/下/左/右）。
 
-游戏只含静态 HTML、CSS、JavaScript 和一张场景图，无需构建步骤。公开源码与在线试玩分别托管；修改源码后，试玩站点需重新部署。
+游戏只含静态 HTML、CSS、JavaScript 和一张场景图，无需构建步骤。GitHub Pages 从 `main` 分支根目录自动发布；另有 [备用试玩地址](https://night-freight-sokoban.cheng8984.chatgpt.site)。
 
 ## 关于作品
 
