@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>深夜货站 · 搬箱子</title>
+<meta name="description" content="一个可直接在电脑和手机浏览器玩的三关推箱子小游戏。">
+<meta property="og:title" content="深夜货站 · 搬箱子">
+<meta property="og:description" content="把木箱推进亮着灯的货位。三关、撤销与重开，打开就能玩。">
+<meta property="og:image" content="https://wenjianzhang.github.io/night-freight-sokoban/assets/screenshot.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{--ink:#e9e1d0;--muted:#b7ac96;--amber:#e9b86f;--floor:#494037;--line:#746655}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#15130f;color:var(--ink);font-family:Georgia,"Songti SC","Noto Serif SC",serif}
+body{background-image:linear-gradient(90deg,rgba(10,9,8,.78),rgba(10,9,8,.35) 54%,rgba(10,9,8,.7)),url("assets/warehouse.png");background-size:cover;background-position:center;min-height:100svh}
+.shell{max-width:1360px;margin:auto;padding:24px 32px 35px}.mast{border-top:1px solid #c69c5f;border-bottom:1px solid #756248;padding:10px 0;display:flex;justify-content:space-between;align-items:center;font-family:Arial,sans-serif;font-size:11px;letter-spacing:.24em;color:#e1cfae}
+.mast b{font-size:14px;letter-spacing:.18em;color:#f3d6a4}.layout{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:42px;align-items:center;min-height:calc(100svh - 105px)}
+.game{display:flex;flex-direction:column;align-items:center}.kicker{font-family:Arial,sans-serif;color:var(--amber);letter-spacing:.3em;font-size:11px;margin:0 0 11px;text-transform:uppercase}.game h1{font-size:clamp(29px,4vw,50px);font-weight:500;letter-spacing:.16em;margin:0 0 5px;text-shadow:0 2px 10px #090908}.subtitle{font-size:14px;letter-spacing:.14em;color:#d2c2a6;margin:0 0 19px}
+.board-frame{padding:13px;background:#17130fe8;border:1px solid #ac8961;box-shadow:0 12px 0 #0b0a08,0 22px 50px #000b;position:relative}
+.board-frame:before,.board-frame:after{content:"";position:absolute;width:18px;height:18px;border:2px solid #d2a66e}.board-frame:before{top:3px;left:3px;border-right:0;border-bottom:0}.board-frame:after{right:3px;bottom:3px;border-left:0;border-top:0}
+.board{display:grid;grid-template-columns:repeat(8,min(7vw,61px));grid-template-rows:repeat(8,min(7vw,61px));background:#2f2821;border:2px solid #8f7354}
+.tile{position:relative;width:100%;height:100%;border:1px solid rgba(188,160,122,.17);background:#51483e;box-shadow:inset 0 0 12px #1c171247}
+.tile:nth-child(even){background-color:#564c41}.tile.wall{background:repeating-linear-gradient(0deg,#221d18 0 6px,#2e2822 6px 8px);box-shadow:inset 2px 2px 4px #77634b, inset -4px -5px 8px #0d0b09;border-color:#19150f}
+.tile.goal:before{content:"";position:absolute;inset:18%;border:3px dashed #efc47e;border-radius:50%;box-shadow:0 0 18px #f4bc6d8c,inset 0 0 14px #ffc16872;background:#e9b86f26}
+.tile.goal:after{content:"01";position:absolute;left:0;right:0;top:42%;text-align:center;font:700 9px Arial,sans-serif;letter-spacing:.1em;color:#f7d5a4}
+.tile.box:before{content:"";position:absolute;inset:7%;background:repeating-linear-gradient(0deg,#9d6838 0 13px,#af7946 14px 17px,#8e592e 18px 19px);border:4px solid #563418;box-shadow:inset 0 0 0 3px #d3a570,inset 0 0 0 7px #6f4727,3px 7px 8px #0d0a087d;z-index:2}
+.tile.box:after{content:"↥  FRAGILE";position:absolute;left:18%;top:39%;width:64%;padding:3% 0;text-align:center;color:#574020;background:#dfc59a;box-shadow:0 1px 2px #382417;z-index:3;font:700 clamp(5px,.6vw,8px) Arial,sans-serif;letter-spacing:.06em}
+.tile.box.goal:before{box-shadow:inset 0 0 0 3px #eec387,inset 0 0 0 7px #6f4727,0 0 20px #f5b960,3px 7px 8px #0d0a087d}
+.tile.player:before{content:"";position:absolute;left:22%;top:15%;width:56%;height:68%;border-radius:45% 45% 35% 35%;background:linear-gradient(95deg,#b98136,#e3b665 42%,#a76f2b);border:2px solid #5b3c1b;box-shadow:3px 5px 4px #16100acc;z-index:4}
+.tile.player:after{content:"";position:absolute;left:34%;top:10%;width:32%;height:25%;border-radius:50%;background:#403329;border:2px solid #edc887;z-index:5}
+.caption{width:min(100%,620px);display:flex;justify-content:space-between;gap:12px;margin-top:16px;font:11px Arial,sans-serif;color:#d6c5a9;letter-spacing:.09em}.caption span:last-child{color:#af9978}
+.side{padding:26px 23px;background:#191712e0;border:1px solid #8f7354;box-shadow:0 14px 38px #09080799}.side .small{font:11px Arial,sans-serif;letter-spacing:.2em;color:#dfb26f}.side h2{font-weight:500;font-size:29px;margin:12px 0 14px;letter-spacing:.08em}.side p{font-size:15px;line-height:1.85;color:#d2c3aa;margin:0 0 20px}.metrics{display:flex;border-top:1px solid #705c43;border-bottom:1px solid #705c43;padding:15px 0;margin-bottom:20px;gap:20px}.metric{flex:1}.metric b{display:block;font:normal 27px Georgia,serif;color:#f4cc8c}.metric span{font:10px Arial,sans-serif;color:#b0a086;letter-spacing:.15em}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:198px;margin:0 auto 19px}.controls button{height:51px}.controls button[data-dir=up]{grid-column:2}.controls button[data-dir=left]{grid-column:1;grid-row:2}.controls button[data-dir=down]{grid-column:2;grid-row:2}.controls button[data-dir=right]{grid-column:3;grid-row:2}
+button{font:15px Arial,sans-serif;cursor:pointer;color:#f0d7ab;background:#3b3125;border:1px solid #b08a58;border-radius:3px;touch-action:manipulation}button:hover,button:focus-visible{background:#725636;outline:2px solid #eebd74}button:active{transform:translateY(2px)}.actions{display:flex;gap:7px}.actions button{padding:10px 9px;flex:1;font-size:12px}.actions button:disabled{opacity:.4;cursor:default}.notice{border-top:1px solid #705c43;margin-top:18px;padding-top:16px;color:#ebc889;font-size:14px;min-height:51px}.help{font:11px Arial,sans-serif;color:#a69376;margin-top:14px;line-height:1.5}
+@media(max-width:850px){body{background-position:center top}.shell{padding:12px 14px 25px}.mast{font-size:9px;letter-spacing:.13em}.mast b{font-size:10px}.layout{grid-template-columns:1fr;gap:21px;padding-top:23px}.board{grid-template-columns:repeat(8,min(10.9vw,48px));grid-template-rows:repeat(8,min(10.9vw,48px))}.game h1{font-size:32px}.subtitle{margin-bottom:14px}.board-frame{padding:8px}.side{padding:17px 18px}.side h2{font-size:24px;margin:5px 0}.side p{margin-bottom:9px;font-size:13px}.metrics{margin-bottom:13px;padding:10px 0}.controls{margin-bottom:12px}.controls button{height:45px}.caption{padding:0 5px;font-size:9px}.help{display:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="mast"><span>GO-ADMIN AI LAB / PLAYABLE STUDY</span><b>FREIGHT DEPOT 03</b><span>LOCAL BUILD · 2026.09.27</span></header>
+  <main class="layout">
+    <section class="game">
+      <p class="kicker">A SMALL PUSHING PUZZLE</p>
+      <h1>深夜货站</h1>
+      <p class="subtitle">把木箱推进亮着灯的货位</p>
+      <div class="board-frame"><div id="board" class="board" role="grid" aria-label="搬箱子游戏棋盘"></div></div>
+      <div class="caption"><span id="stage-caption">01 / 第一件货</span><span>键盘方向键 · WASD · 下方按钮</span></div>
+    </section>
+    <aside class="side">
+      <div class="small">SHIFT LOG / 货站值班簿</div><h2 id="level-name">第一件货</h2>
+      <p id="level-desc">先站到木箱背后，再把它推向发光的货位。</p>
+      <div class="metrics"><div class="metric"><b id="moves">00</b><span>步数 MOVES</span></div><div class="metric"><b id="delivered">0 / 1</b><span>送达 DELIVERED</span></div><div class="metric"><b id="level-index">01 / 03</b><span>关卡 STAGE</span></div></div>
+      <div class="controls" aria-label="移动方向"><button data-dir="up" aria-label="上">↑</button><button data-dir="left" aria-label="左">←</button><button data-dir="down" aria-label="下">↓</button><button data-dir="right" aria-label="右">→</button></div>
+      <div class="actions"><button id="undo">撤销一步</button><button id="reset">重开本关</button><button id="next" disabled>下一关 →</button></div>
+      <div id="notice" class="notice" role="status">这班货，从第一步开始。</div>
+      <div class="help">箱子只能推，不能拉。卡住时可以撤销或重开。</div>
+    </aside>
+  </main>
+</div>
+<script>
+(()=>{
+  const levels=[
+    {name:"第一件货",desc:"先站到木箱背后，再把它推向发光的货位。",map:["########","#      #","#  P   #","#  B   #","#  G   #","#      #","#      #","########"]},
+    {name:"绕过隔墙",desc:"货位在右边，先绕到木箱左侧。",map:["########","#      #","# P    #","#  ##  #","#  B G #","#      #","#      #","########"]},
+    {name:"最后一道弯",desc:"这一次，先改位置，再决定从哪一侧推。",map:["########","#      #","#  P   #","#  #   #","#   B  #","#  # G #","#      #","########"]}
+  ];
+  const deltas={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+  const board=document.getElementById("board"),notice=document.getElementById("notice");
+  let index=0,state,history=[];
+  const key=(x,y)=>x+","+y;
+  const clone=s=>({player:[...s.player],boxes:new Set(s.boxes),moves:s.moves});
+  function load(i){
+    index=i;history=[];const src=levels[i].map,walls=new Set(),goals=new Set(),boxes=new Set();
+    let player=null;
+    src.forEach((row,y)=>[...row].forEach((v,x)=>{const p=key(x,y);if(v==="#")walls.add(p);if(v==="G")goals.add(p);if(v==="B")boxes.add(p);if(v==="P")player=[x,y]}));
+    state={walls,goals,boxes,player,moves:0};notice.textContent="把木箱送进发光货位。";render();
+  }
+  function render(){
+    board.replaceChildren();
+    for(let y=0;y<8;y++)for(let x=0;x<8;x++){
+      const k=key(x,y),tile=document.createElement("div");
+      tile.className="tile"+(state.walls.has(k)?" wall":"")+(state.goals.has(k)?" goal":"")+(state.boxes.has(k)?" box":"")+(state.player[0]===x&&state.player[1]===y?" player":"");
+      tile.setAttribute("role","gridcell");tile.setAttribute("aria-label",state.walls.has(k)?"墙":state.boxes.has(k)?(state.goals.has(k)?"已送达木箱":"木箱"):state.player[0]===x&&state.player[1]===y?"搬运员":state.goals.has(k)?"目标货位":"地面");
+      board.append(tile);
+    }
+    const delivered=[...state.boxes].filter(k=>state.goals.has(k)).length,won=delivered===state.goals.size;
+    document.getElementById("moves").textContent=String(state.moves).padStart(2,"0");
+    document.getElementById("delivered").textContent=delivered+" / "+state.goals.size;
+    document.getElementById("level-index").textContent=String(index+1).padStart(2,"0")+" / 03";
+    document.getElementById("level-name").textContent=levels[index].name;
+    document.getElementById("level-desc").textContent=levels[index].desc;
+    document.getElementById("stage-caption").textContent=String(index+1).padStart(2,"0")+" / "+levels[index].name;
+    document.getElementById("undo").disabled=!history.length;
+    document.getElementById("next").disabled=!won||index===levels.length-1;
+    if(won)notice.textContent=index===levels.length-1?"三件货全部送达。今晚收工。":"送达，用了 "+state.moves+" 步。下一件货已就位。";
+  }
+  function move(dir){
+    if([...state.boxes].every(k=>state.goals.has(k)))return;
+    const [dx,dy]=deltas[dir]||[0,0];if(!dx&&!dy)return;
+    const [x,y]=state.player,next=key(x+dx,y+dy),beyond=key(x+dx*2,y+dy*2);
+    if(state.walls.has(next))return;
+    if(state.boxes.has(next)&&(state.walls.has(beyond)||state.boxes.has(beyond)))return;
+    history.push(clone(state));
+    if(state.boxes.has(next)){state.boxes.delete(next);state.boxes.add(beyond)}
+    state.player=[x+dx,y+dy];state.moves++;render();
+  }
+  document.querySelectorAll("[data-dir]").forEach(b=>b.addEventListener("click",()=>move(b.dataset.dir)));
+  document.getElementById("undo").addEventListener("click",()=>{if(!history.length)return;Object.assign(state,history.pop());notice.textContent="撤销了一步。";render()});
+  document.getElementById("reset").addEventListener("click",()=>load(index));
+  document.getElementById("next").addEventListener("click",()=>{if(!document.getElementById("next").disabled)load(index+1)});
+  window.addEventListener("keydown",e=>{const dir={ArrowUp:"up",KeyW:"up",ArrowDown:"down",KeyS:"down",ArrowLeft:"left",KeyA:"left",ArrowRight:"right",KeyD:"right"}[e.code];if(dir){e.preventDefault();move(dir)}else if(e.code==="KeyZ"&&(e.metaKey||e.ctrlKey)){e.preventDefault();document.getElementById("undo").click()}});
+  load(0);
+})();
+</script>
+</body></html>
